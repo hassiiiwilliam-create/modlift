@@ -1,0 +1,5 @@
+export const vehiclesTable = import.meta.env.VITE_SUPABASE_VEHICLES_TABLE || 'vehicles'
+export const imagesTable = import.meta.env.VITE_SUPABASE_IMAGES_TABLE || 'images'
+export const buildsTable = import.meta.env.VITE_SUPABASE_BUILDS_TABLE || 'builds'
+export const wheelsTable = import.meta.env.VITE_SUPABASE_WHEELS_TABLE || 'wheels'
+export const tiresTable = import.meta.env.VITE_SUPABASE_TIRES_TABLE || 'tires'
