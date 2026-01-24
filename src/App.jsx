@@ -55,6 +55,30 @@ export default function App() {
     let isMounted = true
 
     const initAuth = async () => {
+      // Check for OAuth callback tokens in URL hash (handles Google OAuth redirect)
+      const hashParams = new URLSearchParams(window.location.hash.substring(1))
+      const accessToken = hashParams.get('access_token')
+      const refreshToken = hashParams.get('refresh_token')
+
+      if (accessToken && refreshToken) {
+        // Set the session from OAuth callback tokens
+        const { data, error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        })
+        if (!isMounted) return
+        if (error) {
+          console.error('Failed to set session from OAuth callback', error)
+        } else {
+          setUser(data.session?.user ?? null)
+          // Clean up URL hash
+          window.history.replaceState(null, '', window.location.pathname)
+        }
+        setLoading(false)
+        return
+      }
+
+      // Normal session check
       const {
         data: { session },
         error,

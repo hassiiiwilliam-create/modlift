@@ -132,7 +132,7 @@ export const SUSPENSION_BRANDS = [
 export const STORAGE_KEYS = {
   CART: 'modlift_cart_v1',
   VEHICLE: 'modlift_vehicle',
-  FILTERS: 'modlift_filters',
+  FILTERS: 'modlift-filters', // Note: uses hyphen to match existing usage in useProductFilters
 }
 
 // Currency Formatter

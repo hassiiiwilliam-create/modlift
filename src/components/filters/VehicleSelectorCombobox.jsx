@@ -203,23 +203,25 @@ export default function VehicleSelectorCombobox({
     }
   }, [year, make, model])
 
+  // Sync VehicleContext selection to ProductFilters when selection changes
+  // This ensures vehicle selection is always applied to product filtering
   useEffect(() => {
     if (!selection) return
 
-    const applyIfEmpty = (key, value, currentValue) => {
-      if (!value || currentValue) return
+    // Apply vehicle selection to filters - always sync to ensure consistency
+    const applyVehicleField = (key, value) => {
       const filterKey = KEY_TO_FILTER[key]
-      if (!filterKey) return
+      if (!filterKey || !value) return
       setFilter(filterKey, value)
     }
 
     // Only apply vehicle fields from selection, not drivetrain
     // Drivetrain should be controlled independently via the filter
-    applyIfEmpty('year', selection.year, year)
-    applyIfEmpty('make', selection.make, make)
-    applyIfEmpty('model', selection.model, model)
-    applyIfEmpty('trim', selection.trim, trim)
-  }, [selection, year, make, model, trim, setFilter])
+    applyVehicleField('year', selection.year)
+    applyVehicleField('make', selection.make)
+    applyVehicleField('model', selection.model)
+    applyVehicleField('trim', selection.trim)
+  }, [selection, setFilter])
 
   useEffect(() => {
     const nextSelection = {

@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase.js'
+import { STORAGE_KEYS } from '../config/constants.js'
 
-const STORAGE_KEY = 'vehicle_selection'
+// Use the centralized storage key for consistency across the app
+const STORAGE_KEY = STORAGE_KEYS.VEHICLE // 'modlift_vehicle'
 
 const VehicleContext = createContext({
   selection: null,
@@ -12,11 +14,29 @@ const VehicleContext = createContext({
 
 const isBrowser = () => typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
 
+// Old key used in previous version - migrate to new key if found
+const OLD_STORAGE_KEY = 'vehicle_selection'
+
 const readFromStorage = () => {
   if (!isBrowser()) return null
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : null
+    // Try new key first
+    let raw = window.localStorage.getItem(STORAGE_KEY)
+    if (raw) {
+      return JSON.parse(raw)
+    }
+
+    // Migrate from old key if it exists
+    raw = window.localStorage.getItem(OLD_STORAGE_KEY)
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      // Save to new key and remove old key
+      window.localStorage.setItem(STORAGE_KEY, raw)
+      window.localStorage.removeItem(OLD_STORAGE_KEY)
+      return parsed
+    }
+
+    return null
   } catch (error) {
     console.warn('Failed to parse stored vehicle selection', error)
     return null
@@ -33,6 +53,8 @@ export const VehicleProvider = ({ children }) => {
         const stored = readFromStorage()
         if (stored) {
           setSelection(stored)
+          // Also sync to filters storage on initial load
+          syncToFiltersStorageImmediate(stored)
           return
         }
 
@@ -53,6 +75,8 @@ export const VehicleProvider = ({ children }) => {
           setSelection(record)
           if (isBrowser()) {
             window.localStorage.setItem(STORAGE_KEY, JSON.stringify(record))
+            // Also sync to filters storage on initial load from DB
+            syncToFiltersStorageImmediate(record)
           }
         }
       } catch (error) {
@@ -64,6 +88,23 @@ export const VehicleProvider = ({ children }) => {
 
     loadSelection()
   }, [])
+
+  // Helper to sync vehicle to filters storage (used during initial load)
+  const syncToFiltersStorageImmediate = (vehicle) => {
+    if (!isBrowser()) return
+    try {
+      const filtersKey = STORAGE_KEYS.FILTERS
+      const existing = window.localStorage.getItem(filtersKey)
+      const filters = existing ? JSON.parse(existing) : {}
+      filters.vehicle_year = vehicle.year || ''
+      filters.vehicle_make = vehicle.make || ''
+      filters.vehicle_model = vehicle.model || ''
+      filters.vehicle_trim = vehicle.trim || ''
+      window.localStorage.setItem(filtersKey, JSON.stringify(filters))
+    } catch (error) {
+      console.warn('Failed to sync vehicle to filters storage', error)
+    }
+  }
 
   const persistSelection = async (value) => {
     try {
@@ -89,11 +130,51 @@ export const VehicleProvider = ({ children }) => {
     if (isBrowser()) {
       if (value) {
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
+        // Also sync to filters localStorage so ProductFilters picks up the vehicle
+        syncToFiltersStorage(value)
       } else {
         window.localStorage.removeItem(STORAGE_KEY)
+        // Clear vehicle from filters storage too
+        clearFromFiltersStorage()
       }
     }
     await persistSelection(value)
+  }
+
+  // Sync vehicle selection to the modlift-filters localStorage
+  const syncToFiltersStorage = (vehicle) => {
+    try {
+      const filtersKey = STORAGE_KEYS.FILTERS // 'modlift-filters'
+      const existing = window.localStorage.getItem(filtersKey)
+      const filters = existing ? JSON.parse(existing) : {}
+
+      // Update vehicle fields in filters
+      filters.vehicle_year = vehicle.year || ''
+      filters.vehicle_make = vehicle.make || ''
+      filters.vehicle_model = vehicle.model || ''
+      filters.vehicle_trim = vehicle.trim || ''
+
+      window.localStorage.setItem(filtersKey, JSON.stringify(filters))
+    } catch (error) {
+      console.warn('Failed to sync vehicle to filters storage', error)
+    }
+  }
+
+  const clearFromFiltersStorage = () => {
+    try {
+      const filtersKey = STORAGE_KEYS.FILTERS
+      const existing = window.localStorage.getItem(filtersKey)
+      if (existing) {
+        const filters = JSON.parse(existing)
+        delete filters.vehicle_year
+        delete filters.vehicle_make
+        delete filters.vehicle_model
+        delete filters.vehicle_trim
+        window.localStorage.setItem(filtersKey, JSON.stringify(filters))
+      }
+    } catch (error) {
+      console.warn('Failed to clear vehicle from filters storage', error)
+    }
   }
 
   const clearSelection = async () => {
