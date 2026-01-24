@@ -666,24 +666,24 @@
     @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold;
   }
 
-  .order-status.pending {
+  .order-status-pending {
     @apply bg-amber-500/15 text-amber-400 border border-amber-500/25;
   }
 
-  .order-status.processing {
-    @apply bg-volt-500/15 text-volt-400 border border-volt-500/25;
+  .order-status-processing {
+    @apply bg-lime-500/15 text-lime-400 border border-lime-500/25;
   }
 
-  .order-status.shipped {
-    @apply bg-torque-500/15 text-torque-400 border border-torque-500/25;
+  .order-status-shipped {
+    @apply bg-blue-500/15 text-blue-400 border border-blue-500/25;
   }
 
-  .order-status.delivered {
-    @apply bg-torque-500/20 text-torque-300 border border-torque-500/30;
+  .order-status-delivered {
+    @apply bg-emerald-500/20 text-emerald-300 border border-emerald-500/30;
   }
 
-  .order-status.cancelled {
-    @apply bg-redline-500/15 text-redline-400 border border-redline-500/25;
+  .order-status-cancelled {
+    @apply bg-red-500/15 text-red-400 border border-red-500/25;
   }
 }
 

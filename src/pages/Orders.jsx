@@ -96,14 +96,14 @@ export default function Orders() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-night-950 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="text-center"
         >
-          <Loader2 className="h-10 w-10 text-flame-500 animate-spin mx-auto mb-4" />
-          <p className="text-steel-400">Loading your orders...</p>
+          <Loader2 className="h-10 w-10 text-lime-500 animate-spin mx-auto mb-4" />
+          <p className="text-slate-400">Loading your orders...</p>
         </motion.div>
       </div>
     )
@@ -118,13 +118,13 @@ export default function Orders() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="flex items-center gap-4 mb-2">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-flame-500 to-flame-600 shadow-lg shadow-flame-500/20">
-              <Receipt className="h-6 w-6 text-white" />
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-lime-500 shadow-lg shadow-lime-500/20">
+              <Receipt className="h-7 w-7 text-night-950" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">Your Orders</h1>
-              <p className="text-steel-400 text-sm">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">Your Orders</h1>
+              <p className="text-slate-400 text-sm">
                 {orders.length} order{orders.length !== 1 ? 's' : ''} placed
               </p>
             </div>
@@ -138,79 +138,74 @@ export default function Orders() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center py-16"
           >
-            <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-steel-900/80 border border-steel-800/50 flex items-center justify-center">
-              <ShoppingBag className="h-12 w-12 text-steel-600" />
+            <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-night-800 border border-night-700 flex items-center justify-center">
+              <ShoppingBag className="h-12 w-12 text-slate-600" />
             </div>
             <h2 className="text-xl font-semibold text-white mb-2">No orders yet</h2>
-            <p className="text-steel-400 mb-6 max-w-md mx-auto">
+            <p className="text-slate-400 mb-6 max-w-md mx-auto">
               When you place orders, they'll appear here for easy tracking and management.
             </p>
-            <Link to="/shop" className="btn-primary">
+            <Link to="/shop" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-lime-500 text-night-950 font-semibold hover:bg-lime-400 transition-colors">
               Start Shopping
               <ChevronRight className="h-5 w-5" />
             </Link>
           </motion.div>
         ) : (
-          <AnimatePresence mode="popLayout">
-            <div className="space-y-4">
-              {orders.map((order, index) => {
-                const status = statusConfig[order.status] || statusConfig.pending
-                const StatusIcon = status.icon
+          <div className="space-y-3">
+            {orders.map((order, index) => {
+              const status = statusConfig[order.status] || statusConfig.pending
+              const StatusIcon = status.icon
 
-                return (
-                  <motion.div
-                    key={order.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ delay: index * 0.05 }}
+              return (
+                <motion.div
+                  key={order.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <Link
+                    to={`/order/${order.id}`}
+                    className="block p-5 rounded-2xl bg-night-900/80 border border-night-800 hover:border-lime-500/30 transition-all group"
                   >
-                    <Link
-                      to={`/order/${order.id}`}
-                      className="order-card group"
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        {/* Order Info */}
-                        <div className="flex items-start gap-4">
-                          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-steel-800/50 border border-steel-700/50 group-hover:border-flame-500/30 transition-colors">
-                            <Package className="h-7 w-7 text-steel-400 group-hover:text-flame-400 transition-colors" />
-                          </div>
-                          <div>
-                            <p className="font-semibold text-white group-hover:text-flame-400 transition-colors">
-                              Order #{order.id.slice(0, 8)}...
-                            </p>
-                            <p className="text-sm text-steel-500">
-                              Placed on {formatDate(order.created_at)}
-                            </p>
-                            {order.tracking_number && order.status === 'shipped' && (
-                              <p className="text-xs text-volt-400 mt-1 flex items-center gap-1">
-                                <Truck className="h-3 w-3" />
-                                {order.carrier || 'Tracking'}: {order.tracking_number}
-                              </p>
-                            )}
-                          </div>
+                    <div className="flex items-center justify-between gap-4">
+                      {/* Order Info */}
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="flex-shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-night-800 border border-night-700 group-hover:border-lime-500/30 transition-colors">
+                          <Package className="h-6 w-6 text-slate-400 group-hover:text-lime-400 transition-colors" />
                         </div>
-
-                        {/* Status & Price */}
-                        <div className="flex items-center gap-4 sm:gap-6">
-                          <span className={status.class}>
-                            <StatusIcon className="h-4 w-4" />
-                            {status.label}
-                          </span>
-                          <div className="text-right">
-                            <p className="font-bold text-white">
-                              {formatPrice(order.total_price)}
-                            </p>
-                          </div>
-                          <ChevronRight className="h-5 w-5 text-steel-600 group-hover:text-flame-400 group-hover:translate-x-1 transition-all" />
+                        <div className="min-w-0">
+                          <p className="font-semibold text-white group-hover:text-lime-400 transition-colors truncate">
+                            Order #{order.id.slice(0, 8)}...
+                          </p>
+                          <p className="text-sm text-slate-500">
+                            {formatDate(order.created_at)}
+                          </p>
                         </div>
                       </div>
-                    </Link>
-                  </motion.div>
-                )
-              })}
-            </div>
-          </AnimatePresence>
+
+                      {/* Status & Price */}
+                      <div className="flex items-center gap-3 sm:gap-5 flex-shrink-0">
+                        <span className={`hidden sm:inline-flex ${status.class}`}>
+                          <StatusIcon className="h-4 w-4" />
+                          {status.label}
+                        </span>
+                        <p className="font-bold text-white whitespace-nowrap">
+                          {formatPrice(order.total_price)}
+                        </p>
+                        <ChevronRight className="h-5 w-5 text-slate-600 group-hover:text-lime-400 group-hover:translate-x-1 transition-all" />
+                      </div>
+                    </div>
+                    {order.tracking_number && order.status === 'shipped' && (
+                      <p className="text-xs text-lime-400 mt-3 flex items-center gap-1 pl-16">
+                        <Truck className="h-3 w-3" />
+                        {order.carrier || 'Tracking'}: {order.tracking_number}
+                      </p>
+                    )}
+                  </Link>
+                </motion.div>
+              )
+            })}
+          </div>
         )}
 
         {/* Help Section */}
@@ -219,13 +214,13 @@ export default function Orders() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="mt-12 rounded-2xl bg-steel-900/40 border border-steel-800/50 p-6"
+            className="mt-12 rounded-2xl bg-night-900/60 border border-night-800 p-6"
           >
             <h3 className="font-semibold text-white mb-2">Need help with an order?</h3>
-            <p className="text-steel-400 text-sm mb-4">
+            <p className="text-slate-400 text-sm mb-4">
               Our support team is ready to assist with any questions about your orders, shipping, or returns.
             </p>
-            <Link to="/support" className="text-flame-400 hover:text-flame-300 text-sm font-medium transition-colors">
+            <Link to="/contact" className="text-lime-400 hover:text-lime-300 text-sm font-medium transition-colors">
               Contact Support →
             </Link>
           </motion.div>
