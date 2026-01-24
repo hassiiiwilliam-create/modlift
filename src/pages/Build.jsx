@@ -52,7 +52,7 @@ export default function Build() {
   }
 
   return (
-    <div className="flex min-h-screen bg-white text-black transition dark:bg-black dark:text-white">
+    <div className="flex min-h-screen bg-night-950">
       <AIChatSidebar />
       <div className="flex-1">
         <Hero
@@ -63,10 +63,10 @@ export default function Build() {
         <div className="mx-auto max-w-5xl px-4">
           <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-2xl font-semibold text-white">
                 Vehicle fitment
               </h2>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-sm text-slate-400">
                 Lock in your exact vehicle to see only perfect-fit components.
               </p>
             </div>
@@ -76,13 +76,13 @@ export default function Build() {
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
                 placeholder="Search by SKU, size, or brand"
-                className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white sm:w-72"
+                className="w-full rounded-xl border border-night-800 bg-night-900 px-4 py-2.5 text-sm text-white placeholder-slate-500 shadow-sm outline-none transition focus:border-lime-500/50 focus:ring-2 focus:ring-lime-500/20 sm:w-72"
               />
               {searchInput && (
                 <button
                   type="button"
                   onClick={() => setSearchInput('')}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-gray-500 transition hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-400 transition hover:text-lime-400 hover:bg-night-900"
                 >
                   Clear
                 </button>
@@ -91,7 +91,7 @@ export default function Build() {
           </div>
 
           <ProductFiltersProvider>
-            <div className="mt-6 rounded-2xl bg-white/70 p-4 shadow-inner shadow-black/5 ring-1 ring-black/10 backdrop-blur dark:bg-neutral-900/70 dark:ring-neutral-800">
+            <div className="mt-6 rounded-2xl bg-night-900/50 p-4 border border-night-800/50 backdrop-blur">
               <VehicleSelectorCombobox
                 includeDrivetrain
                 onCompleteSelection={handleVehicleComplete}
@@ -133,7 +133,7 @@ export default function Build() {
               <div className="mt-10 text-center">
                 <button
                   onClick={handleSaveBuild}
-                  className="rounded-xl bg-black px-6 py-3 text-sm font-semibold text-white shadow transition hover:scale-105 dark:bg-white dark:text-black"
+                  className="rounded-xl bg-lime-500 px-6 py-3 text-sm font-semibold text-night-950 shadow-lg shadow-lime-500/25 transition hover:bg-lime-400 hover:scale-105"
                 >
                   {saved ? '✅ Build Saved!' : '💾 Save Build'}
                 </button>
