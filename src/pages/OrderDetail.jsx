@@ -49,6 +49,12 @@ const statusConfig = {
     label: 'Delivered',
     description: 'Your order has been delivered',
   },
+  cancellation_requested: {
+    icon: Clock,
+    class: 'order-status order-status-pending',
+    label: 'Cancellation Requested',
+    description: 'Your cancellation request is being reviewed',
+  },
   cancelled: {
     icon: XCircle,
     class: 'order-status order-status-cancelled',
@@ -125,21 +131,25 @@ export default function OrderDetail() {
     fetchOrderDetails()
   }, [user, id])
 
-  const handleCancelOrder = async () => {
-    if (!window.confirm('Are you sure you want to cancel this order?')) return
+  const handleRequestCancellation = async () => {
+    if (!window.confirm('Are you sure you want to request cancellation of this order? Our team will review your request and process it within 1-2 business days.')) return
 
     setCancelling(true)
     const { error } = await supabase
       .from('orders')
-      .update({ status: 'cancelled' })
+      .update({
+        status: 'cancellation_requested',
+        cancellation_requested_at: new Date().toISOString()
+      })
       .eq('id', id)
 
     if (error) {
-      toast.error('Cancel failed.')
+      toast.error('Failed to submit cancellation request.')
       setCancelling(false)
     } else {
-      toast.success('Order cancelled.')
-      navigate('/orders')
+      toast.success('Cancellation request submitted. Our team will review it shortly.')
+      setOrder(prev => ({ ...prev, status: 'cancellation_requested' }))
+      setCancelling(false)
     }
   }
 
@@ -191,11 +201,12 @@ export default function OrderDetail() {
         return
       }
 
-      const response = await fetch('https://uoaaiyzycbufdnptrluc.functions.supabase.co/send-receipt', {
+      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVvYWFpeXp5Y2J1ZmRucHRybHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMjA0MjMsImV4cCI6MjA3MjU5NjQyM30.4jpb-1WgEF0mfQDGz0It8u8RER6evSSHr17TiIxmPR8'
+      const response = await fetch('https://uoaaiyzycbufdnptrluc.supabase.co/functions/v1/send-receipt', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          Authorization: `Bearer ${anonKey}`,
         },
         body: JSON.stringify({
           orderId: order.id,
@@ -503,22 +514,30 @@ export default function OrderDetail() {
 
               {order.status === 'pending' && (
                 <button
-                  onClick={handleCancelOrder}
+                  onClick={handleRequestCancellation}
                   disabled={cancelling}
                   className="btn-danger w-full"
                 >
                   {cancelling ? (
                     <>
                       <Loader2 className="h-5 w-5 animate-spin" />
-                      Cancelling...
+                      Submitting Request...
                     </>
                   ) : (
                     <>
                       <XCircle className="h-5 w-5" />
-                      Cancel Order
+                      Request Cancellation
                     </>
                   )}
                 </button>
+              )}
+
+              {order.status === 'cancellation_requested' && (
+                <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-center">
+                  <Clock className="h-6 w-6 text-yellow-500 mx-auto mb-2" />
+                  <p className="text-sm text-yellow-400 font-medium">Cancellation Pending</p>
+                  <p className="text-xs text-slate-400 mt-1">Our team is reviewing your request</p>
+                </div>
               )}
             </motion.div>
 

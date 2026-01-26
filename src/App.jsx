@@ -34,6 +34,7 @@ import Contact from './pages/Contact'
 import FAQ from './pages/FAQ'
 import Cookies from './pages/Cookies'
 import Wishlist from './pages/Wishlist'
+import Support from './pages/Support'
 import { supabase } from './supabaseClient'
 
 import Navbar from './components/Navbar'
@@ -203,6 +204,14 @@ export default function App() {
                   }
                 />
                 <Route path="/wishlist" element={<Wishlist />} />
+                <Route
+                  path="/support"
+                  element={
+                    <PrivateRoute>
+                      <Support />
+                    </PrivateRoute>
+                  }
+                />
                 {/* Policy & Info Pages */}
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />

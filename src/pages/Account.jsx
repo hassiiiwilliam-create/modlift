@@ -818,16 +818,16 @@ export default function Account() {
               </Link>
 
               <Link
-                to="/contact"
+                to="/support"
                 className="block p-4 rounded-xl bg-night-800/30 border border-night-700/30 hover:border-lime-500/30 transition-all group"
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-night-700/50 group-hover:bg-lime-500/20 transition-colors">
-                    <HeadphonesIcon className="h-5 w-5 text-slate-400 group-hover:text-lime-400 transition-colors" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-lime-500/10 group-hover:bg-lime-500/20 transition-colors">
+                    <HeadphonesIcon className="h-5 w-5 text-lime-400 transition-colors" />
                   </div>
                   <div>
-                    <p className="font-medium text-white group-hover:text-lime-400 transition-colors">Support</p>
-                    <p className="text-sm text-slate-500 mt-0.5">Get help from our team</p>
+                    <p className="font-medium text-white group-hover:text-lime-400 transition-colors">Support Messages</p>
+                    <p className="text-sm text-slate-500 mt-0.5">Chat with our support team</p>
                   </div>
                 </div>
               </Link>

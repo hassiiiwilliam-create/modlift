@@ -20,6 +20,21 @@ const statusOrder = ['pending', 'processing', 'shipped', 'delivered']
 export default function OrderTimeline({ order }) {
   if (!order) return null
 
+  // Handle cancellation requested
+  if (order.status === 'cancellation_requested') {
+    return (
+      <div className="flex items-center gap-3 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30">
+        <Clock className="h-6 w-6 text-yellow-500" />
+        <div>
+          <p className="font-medium text-yellow-400">Cancellation Requested</p>
+          <p className="text-sm text-steel-400">
+            Your cancellation request is being reviewed by our team
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   // Handle cancelled/refunded orders differently
   if (order.status === 'cancelled' || order.status === 'refunded') {
     return (

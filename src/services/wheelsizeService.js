@@ -1,17 +1,15 @@
 // wheelsizeService.js
 
-const DEFAULT_BASE_URL = 'http://localhost:3001/api'
-
-const API_BASE = (import.meta.env.VITE_WHEELSIZE_PROXY_URL || DEFAULT_BASE_URL).replace(/\/$/, '')
-
-const ensureTrailingSlash = (segment) => {
-  if (segment.includes('?')) return segment
-  return segment.endsWith('/') ? segment : `${segment}/`
-}
+// Use the Supabase Edge Function as the proxy (works in both dev and production)
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://uoaaiyzycbufdnptrluc.supabase.co'
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVvYWFpeXp5Y2J1ZmRucHRybHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMjA0MjMsImV4cCI6MjA3MjU5NjQyM30.4jpb-1WgEF0mfQDGz0It8u8RER6evSSHr17TiIxmPR8'
+const API_BASE = `${SUPABASE_URL}/functions/v1/wheelsize-proxy`
 
 const buildUrl = (endpoint, params = {}) => {
-  const normalizedEndpoint = ensureTrailingSlash(endpoint.replace(/^\/+/, ''))
-  const url = new URL(normalizedEndpoint, `${API_BASE}/`)
+  // Remove leading slashes from endpoint
+  const cleanEndpoint = endpoint.replace(/^\/+/, '').replace(/\/+$/, '')
+  // Build full URL: https://xxx.supabase.co/functions/v1/wheelsize-proxy/years
+  const url = new URL(`${API_BASE}/${cleanEndpoint}`)
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
       url.searchParams.append(key, value)
@@ -36,7 +34,12 @@ const extractArray = (payload) => {
 const requestArray = async (endpoint, params = {}) => {
   const url = buildUrl(endpoint, params)
   try {
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+      },
+    })
     if (!response.ok) {
       throw new Error(`Wheel-Size request failed (${response.status}) — ${url}`)
     }
@@ -51,23 +54,23 @@ const requestArray = async (endpoint, params = {}) => {
 
 // === Exported Data Fetchers ===
 
-export const fetchYears = () => requestArray('/years/')
+export const fetchYears = () => requestArray('years')
 
 export const fetchMakes = (year) => {
   if (!year) return Promise.resolve([])
-  return requestArray('/makes/', { year })
+  return requestArray('makes', { year })
 }
 
 export const fetchModels = (year, make) => {
   if (!year || !make) return Promise.resolve([])
-  return requestArray('/models/', { year, make })
+  return requestArray('models', { year, make })
 }
 
 export const fetchTrims = async (year, make, model) => {
   if (!year || !make || !model) return []
 
   // Try the Wheel-Size API first
-  const trims = await requestArray('/trims/', { year, make, model })
+  const trims = await requestArray('trims', { year, make, model })
 
   // If API returns data, use it
   if (trims && trims.length > 0) {

@@ -258,11 +258,10 @@ export default function Home() {
       setLoading((prev) => ({ ...prev, years: true }))
       try {
         const data = await fetchYears()
-        // Sort years descending and take recent ones
+        // Sort years descending (no limit - show all available years)
         const sortedYears = data
           .map((y) => (typeof y === 'object' ? y.slug || y.name : y))
           .sort((a, b) => Number(b) - Number(a))
-          .slice(0, 20)
         setYears(sortedYears)
       } catch (err) {
         console.error('Failed to load years:', err)
@@ -370,9 +369,9 @@ export default function Home() {
       </AnimatePresence>
 
       {/* Hero Section with Vehicle Selector */}
-      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[85vh] flex items-center justify-center">
         {/* Background */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-night-950 via-night-900/50 to-night-950" />
           <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-lime-500/5 rounded-full blur-[150px]" />
           <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-lime-500/3 rounded-full blur-[120px]" />

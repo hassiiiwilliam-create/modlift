@@ -37,6 +37,11 @@ const statusConfig = {
     class: 'order-status order-status-delivered',
     label: 'Delivered',
   },
+  cancellation_requested: {
+    icon: Clock,
+    class: 'order-status order-status-pending',
+    label: 'Cancellation Pending',
+  },
   cancelled: {
     icon: XCircle,
     class: 'order-status order-status-cancelled',
